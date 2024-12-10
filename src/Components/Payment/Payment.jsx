@@ -1,168 +1,175 @@
-import axios from 'axios'
-import React, { useContext } from 'react'
-import { useState } from 'react';
-import toast from "react-hot-toast";
+import axios from 'axios';
+import React, { useContext, useState } from 'react';
+import toast from 'react-hot-toast';
 import { productToCart } from './../../context/AddProductToCartContext';
+import { FaCreditCard, FaMoneyBillWave } from 'react-icons/fa'; // استيراد الأيقونات من مكتبة react-icons
 
 export const Payment = () => {
+  const { cartid, settotalprice, setproducts, setnumofitems } = useContext(productToCart);
+  const [details, setdetails] = useState('');
+  const [phone, setphone] = useState('');
+  const [city, setcity] = useState('');
+  const [errors, seterrors] = useState({ details: '', phone: '', city: '' });
 
-    let {cartid , settotalprice,setproducts,setnumofitems} = useContext(productToCart)
+  // Function to validate form inputs
+  function validatae() {
+    let valid = true;
+    let newErrors = { details: '', phone: '', city: '' };
 
-    const [details, setdetails] = useState("")
-    const [phone, setphone] = useState("")
-    const [city, setcity] = useState("")
-    const [errors, seterrors] = useState({details:"", phone:"", city:""})
-
-    function validatae(){
-      let valid = true;
-      if(details == ""){
-        errors.details = "details is required"
-        valid = false;
-      }
-
-      let phonereg = /^01[0125][0-9]{8}$/
-      if(!phonereg.test(phone)){
-        errors.phone = "not valid egypt number"
-        valid = false;
-      }
-      if(city == ""){
-        errors.city = "city is required"
-        valid = false;
-      }
-
-      seterrors(errors)
-      return valid
+    if (details === '') {
+      newErrors.details = 'Details are required';
+      valid = false;
     }
 
-    
+    const phonereg = /^01[0125][0-9]{8}$/;
+    if (!phonereg.test(phone)) {
+      newErrors.phone = 'Invalid Egyptian phone number';
+      valid = false;
+    }
 
+    if (city === '') {
+      newErrors.city = 'City is required';
+      valid = false;
+    }
 
-    async function onlinepayment() {
-      if(!validatae())return;
-       
-        let CartData = {
-            shippingAddress: {
-                details,
-                phone,
-                city,
-            }
-        };
-    
-        // console.log(CartData);
-    
-        try {
-            let {data} = await axios.post(`https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${cartid}?url=http://localhost:5173`, CartData, {
-                headers: {
-                    token: localStorage.getItem("usertoken")
-                }
-            });
-    
-            toast.success(data.status);
-            setnumofitems(0);
-            setproducts([]);
-            settotalprice(0);
-            window.open(data.session.url)
-    
-        } catch (error) {
-            toast.error("Error creating order");
+    seterrors(newErrors);
+    return valid;
+  }
+
+  // Function for online payment
+  async function onlinepayment() {
+    if (!validatae()) return;
+
+    let CartData = {
+      shippingAddress: {
+        details,
+        phone,
+        city,
+      },
+    };
+
+    try {
+      let { data } = await axios.post(
+        `https://ecommerce.routemisr.com/api/v1/orders/checkout-session/${cartid}?url=http://localhost:5173`,
+        CartData,
+        {
+          headers: {
+            token: localStorage.getItem('usertoken'),
+          },
         }
+      );
+
+      toast.success(data.status);
+      setnumofitems(0);
+      setproducts([]);
+      settotalprice(0);
+      window.open(data.session.url);
+    } catch (error) {
+      toast.error('Error creating order');
     }
-    async function cashpayment() {
-      if(!validatae())return;
-       
-        let CartData = {
-            shippingAddress: {
-                details,
-                phone,
-                city,
-            }
-        };
-    
-        // console.log(CartData);
-    
-        try {
-            let {data} = await axios.post(`https://ecommerce.routemisr.com/api/v1/orders/${cartid}`, CartData, {
-                headers: {
-                    token: localStorage.getItem("usertoken")
-                }
-            });
-    
-            toast.success(data.status);
-            setnumofitems(0);
-            setproducts([]);
-            settotalprice(0);
-    
-        } catch (error) {
-            toast.error("Error creating order");
+  }
+
+  // Function for cash payment
+  async function cashpayment() {
+    if (!validatae()) return;
+
+    let CartData = {
+      shippingAddress: {
+        details,
+        phone,
+        city,
+      },
+    };
+
+    try {
+      let { data } = await axios.post(
+        `https://ecommerce.routemisr.com/api/v1/orders/${cartid}`,
+        CartData,
+        {
+          headers: {
+            token: localStorage.getItem('usertoken'),
+          },
         }
+      );
+
+      toast.success(data.status);
+      setnumofitems(0);
+      setproducts([]);
+      settotalprice(0);
+    } catch (error) {
+      toast.error('Error creating order');
     }
+  }
 
   return (
-    <section className='py-10'>
-        <h2 className='mb-4 text-center text-green-600 font-semibold text-4xl'>Payment</h2>
-        <div className='w-[90%] mx-auto md:w-[60%]'>
-       {/* city */}
-       <div className="relative z-0 w-full mb-5 group">
-          <input
-          onChange={(e)=>setcity(e.target.value)}
-            type="text"
-            name="city"
-            id="city"
-            required
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
-            placeholder=" "
-          />
-          <label htmlFor="city" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-            Your city
+    <section className="py-12 bg-gray-50">
+      <h2 className="text-center text-3xl text-green-600 font-semibold mb-6">Payment</h2>
+      <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg">
+        {/* City Input */}
+        <div className="mb-5">
+          <label htmlFor="city" className="block text-sm text-gray-600 font-medium mb-2">
+            Your City
           </label>
-        </div>
-        {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
-       {/* phone */}
-       <div className="relative z-0 w-full mb-5 group">
           <input
-          onChange={(e)=>setphone(e.target.value)}
-            type="tel"
-            name="phone"
-            id="phone"
-            required
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
-            placeholder=" "
+            onChange={(e) => setcity(e.target.value)}
+            type="text"
+            id="city"
+            value={city}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+            placeholder="Enter your city"
           />
-          <label htmlFor="phone" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
+          {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
+        </div>
+
+        {/* Phone Input */}
+        <div className="mb-5">
+          <label htmlFor="phone" className="block text-sm text-gray-600 font-medium mb-2">
             Your Phone
           </label>
-        </div>
-        {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
-
-       {/* details */}
-       <div className="relative z-0 w-full mb-5 group">
           <input
-          onChange={(e)=>setdetails(e.target.value)}
-            type="text"
-            name="details"
-            id="details"
-            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
-            placeholder=" "
+            onChange={(e) => setphone(e.target.value)}
+            type="tel"
+            id="phone"
+            value={phone}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+            placeholder="Enter your phone number"
           />
-          <label htmlFor="details" className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-            Your details
+          {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+        </div>
+
+        {/* Delivery Details Input */}
+        <div className="mb-5">
+          <label htmlFor="details" className="block text-sm text-gray-600 font-medium mb-2">
+            Delivery Details
           </label>
-        </div>
-        {errors.details && <p className="text-red-500 text-xs mt-1">{errors.details}</p>}
-
-        <button
-        onClick={cashpayment}
-        type="submit" className="py-2.5 px-5 me-2 mb-2 text-md font-medium bg-white rounded-lg hover:text-green-700 dark:bg-green-800 dark:text-white dark:hover:text-white dark:hover:bg-green-600 duration-200">
-        cash payment
-        </button>
-        <button
-        onClick={onlinepayment}
-        type="submit" className="py-2.5 px-5 me-2 mb-2 text-md font-medium bg-white rounded-lg hover:text-green-700 dark:bg-green-800 dark:text-white dark:hover:text-white dark:hover:bg-green-600 duration-200">
-        online payment
-        </button>
+          <input
+            onChange={(e) => setdetails(e.target.value)}
+            type="text"
+            id="details"
+            value={details}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none"
+            placeholder="Enter delivery details"
+          />
+          {errors.details && <p className="text-red-500 text-xs mt-1">{errors.details}</p>}
         </div>
 
+        {/* Payment Buttons */}
+        <div className="flex justify-between space-x-4">
+          <button
+            onClick={cashpayment}
+            className="w-1/2 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 transition duration-200 flex items-center justify-center"
+          >
+            <FaMoneyBillWave className="mr-2" /> Cash Payment
+          </button>
 
+          <button
+            onClick={onlinepayment}
+            className="w-1/2 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 transition duration-200 flex items-center justify-center"
+          >
+            <FaCreditCard className="mr-2" /> Online Payment
+          </button>
+        </div>
+      </div>
     </section>
-  )
-}
+  );
+};

@@ -1,61 +1,99 @@
-import { useContext } from "react"
+import { useContext } from "react";
 import { productToCart } from './../../context/AddProductToCartContext';
 import { FallingLines } from 'react-loader-spinner';
 import { Link } from 'react-router-dom';
+import { FaTrashAlt, FaPlus, FaMinus } from 'react-icons/fa'; // إضافة الأيقونات من مكتبة FontAwesome
 
 export default function Cart() {
+  let { products, totalprice, updataProduct, load, deleteproduct, load2, deleteAll } = useContext(productToCart);
 
+  // عند عدم وجود منتجات في العربة
+  if (products?.length === 0) {
+    return (
+      <div className="pt-20 text-center text-2xl text-green-600 h-screen">
+        No Products in the Cart
+      </div>
+    );
+  }
 
-  let {products , totalprice , updataProduct , load , deleteproduct , load2 ,deleteAll} = useContext(productToCart)
-  // console.log(products);
-  // if(products==null){
-  //   return (
-  //     <div className="h-screen bg-green-400 flex justify-center items-center">
-  //       <FallingLines visible={true} width="200" color="red" ariaLabel="infinity-spin-loading" />
-  //     </div>
-  //   );
-  // }
   return (
     <section>
-      {products?.length != 0 ?<>
-        <div className="w-[90%] md:w-[80%] mx-auto py-9">
-        <h2 className="p-4 text-green-600 text-2xl font-mono text-center">total price : {totalprice}</h2>
+      <div className="w-[90%] md:w-[80%] mx-auto py-9">
+        {/* عرض إجمالي السعر */}
+        <h2 className="p-4 text-green-600 text-2xl font-mono text-center">
+          Total Price: {totalprice} EGP
+        </h2>
+
+        {/* زر حذف جميع العناصر */}
         <button
-        onClick={()=>deleteAll()}
-        className="p-2 mb-4 rounded-lg text-white text-2xl font-bold text-center mx-auto block w-full bg-red-500 ">delete all</button>
+          onClick={deleteAll}
+          className="p-3 mb-4 rounded-lg text-white text-2xl font-bold text-center mx-auto block w-full bg-red-500 hover:bg-red-600 transition duration-300 flex items-center justify-center"
+        >
+          <FaTrashAlt className="mr-2" /> Delete All
+        </button>
+
+        {/* رابط للانتقال إلى صفحة الدفع */}
         <Link
-        to = "/Payment"
-        className="p-2 mb-4 rounded-lg text-white text-2xl font-bold text-center mx-auto block bg-green-500 ">payment</Link>
-        {products?.map((item , idx)=>{
-          return <div key={idx} className="border-2 border-b-green-400 flex p-4 bg-slate-200 flex-wrap justify-center items-center"> 
-          <div className="md:w-1/6 w-full">
-          <img src={item.product.imageCover} className="w-full" alt="" />
-          </div>
-          <div className="md:w-4/6 w-full">
-          <h2 className="p-3 text-green-600 text-xl">title : {item.product.title.split(" ").slice(0.2).join(" ")}</h2>
-          <p className="p-3 text-xl">price : {item.price} EGP</p>
-          <button
-          onClick={()=>deleteproduct(item.product.id)}
-                  className="py-3 mb-5 md:mb-0 px-4 w-[50%] mx-auto block bg-red-600 rounded-2xl group-hover:bg-green-800 duration-500 text-white my-2"
+          to="/Payment"
+          className="p-3 mb-4 rounded-lg text-white text-2xl font-bold text-center mx-auto block bg-green-500 hover:bg-green-600 transition duration-300 flex items-center justify-center"
+        >
+          Proceed to Payment
+        </Link>
+
+        {/* قائمة المنتجات */}
+        {products?.map((item, idx) => {
+          return (
+            <div key={idx} className="border-2 border-b-green-400 flex p-4 bg-slate-200 flex-wrap justify-center items-center mb-5 rounded-lg shadow-lg">
+              {/* عرض صورة المنتج */}
+              <div className="md:w-1/6 w-full mb-4 md:mb-0">
+                <img src={item.product.imageCover} className="w-full rounded-lg" alt={item.product.title} />
+              </div>
+
+              {/* تفاصيل المنتج */}
+              <div className="md:w-4/6 w-full">
+                <h2 className="p-3 text-green-600 text-xl font-semibold">
+                  {item.product.title.split(" ").slice(0, 3).join(" ")}...
+                </h2>
+                <p className="p-3 text-xl">Price: {item.price} EGP</p>
+
+                {/* زر حذف المنتج */}
+                <button
+                  onClick={() => deleteproduct(item.product.id)}
+                  className="py-3 mb-5 md:mb-0 px-4 w-[50%] mx-auto block bg-red-600 rounded-2xl text-white flex items-center justify-center hover:bg-red-700 transition duration-300"
                 >
-                  {load2[item.product.id]?<i className="fa-solid fa-spinner fa-spin"></i>:"remove"}
+                  {load2[item.product.id] ? <i className="fa-solid fa-spinner fa-spin"></i> : <FaTrashAlt />}
+                  <span className="ml-2">{load2[item.product.id] ? "Removing..." : "Remove"}</span>
                 </button>
-          </div>
-          <div className="md:w-1/6 w-full flex md:justify-between justify-center items-center">
-          <button className="p-2 text-xl mr-3 md:mr-0 text-white bg-green-600 rounded-lg"
-          onClick={()=>updataProduct(item.product.id , item.count + 1)}
-          >+</button>
-          <p className="p-2 text-xl text-white mr-3 md:mr-0 bg-green-600 rounded-lg">{load[item.product.id]?<i className="fa-solid fa-spinner fa-spin"></i>:item.count}</p>
-          <button className={`${item.count==0 ? "opacity-25":""} p-2 text-xl text-white bg-green-600 rounded-lg`}
-          onClick={()=>updataProduct(item.product.id , item.count - 1)}
-          disabled={ item.count==0 ?true : false}
-          >-</button>
-          </div>
-        </div>
+              </div>
+
+              {/* التحكم في الكمية */}
+              <div className="md:w-1/6 w-full flex md:justify-between justify-center items-center mt-4 md:mt-0">
+                {/* زر الزيادة */}
+                <button
+                  className="p-2 text-xl text-white bg-green-600 rounded-lg hover:bg-green-700 transition duration-300 flex items-center justify-center"
+                  onClick={() => updataProduct(item.product.id, item.count + 1)}
+                >
+                  <FaPlus />
+                </button>
+
+                {/* عرض الكمية الحالية */}
+                <p className="p-2 text-xl text-white bg-green-600 rounded-lg mx-2 flex items-center justify-center">
+                  {load[item.product.id] ? <i className="fa-solid fa-spinner fa-spin"></i> : item.count}
+                </p>
+
+                {/* زر النقصان */}
+                <button
+                  className={`${item.count === 0 ? "opacity-25" : ""} p-2 text-xl text-white bg-green-600 rounded-lg hover:bg-green-700 transition duration-300 flex items-center justify-center`}
+                  onClick={() => updataProduct(item.product.id, item.count - 1)}
+                  disabled={item.count === 0}
+                >
+                  <FaMinus />
+                </button>
+              </div>
+            </div>
+          );
         })}
-        
       </div>
-      </>:<div className="pt-20 text-center text-2xl text-green-600 h-screen">NO Products on the Cart</div>}
     </section>
-  )
+  );
 }
