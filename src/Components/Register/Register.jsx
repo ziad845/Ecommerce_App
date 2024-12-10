@@ -15,7 +15,7 @@ export default function Register() {
     name: YUP.string()
       .required("You must enter the name")
       .min(3, "Min is 3 characters")
-      .max(10, "Max is 10 characters"),
+      .max(15, "Max is 10 characters"),
     email: YUP.string()
       .required("You must enter an email")
       .email("Enter a valid email"),
@@ -24,7 +24,9 @@ export default function Register() {
       .matches(/^01[0125][0-9]{8}$/, "Enter a valid Egyptian phone number"),
     password: YUP.string()
       .required("You must enter a password")
-      .matches(/^[A-Za-z0-9@]{3,17}$/, "Password must be correct"),
+      .min(6, "Password must be at least 6 characters long")
+      .max(20, "Password must be at most 20 characters long")
+      .matches(/^[A-Za-z0-9@!#$%^&*()_+={}\[\]:;"'<>,.?/\\|`~\-]+$/, "Password must be a valid format"),
     rePassword: YUP.string()
       .required("You must confirm the password")
       .oneOf([YUP.ref("password")], "Passwords must match"),
@@ -37,7 +39,7 @@ export default function Register() {
       toast.success(res.data.message);
       localStorage.setItem("usertoken", res.data.token);
       setusertoken(res.data.token);
-      navigate("/Login");
+      navigate("/");
     } catch (err) {
       toast.error(err.response.data.message);
     } finally {
