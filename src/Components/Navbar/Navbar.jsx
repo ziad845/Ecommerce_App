@@ -21,13 +21,13 @@ export default function Navbar() {
     <nav className="z-50 bg-white dark:bg-gray-900 fixed w-full top-0 left-0 right-0 shadow-md">
       <div className="md:w-[90%] mx-auto py-4 flex justify-between items-center flex-wrap">
 
-        {/* Logo Section */}
+        
         <div className="flex justify-between items-center w-full md:w-auto">
           <NavLink to="/" className="text-3xl">
             <img src={logo} alt="logo" className="md:w-auto h-12" />
           </NavLink>
 
-          {/* Toggle button for mobile */}
+         
           <i
             onClick={() => setvisib(!visib)}
             className="fa-solid text-3xl cursor-pointer md:hidden"
@@ -36,13 +36,12 @@ export default function Navbar() {
           </i>
         </div>
 
-        {/* Navbar Links */}
         <div
           className={`${visib ? "block" : "hidden"} md:flex justify-center items-center w-full md:w-auto mt-4 md:mt-0`}
         >
           {usertoken !== null ? (
             <ul className="flex flex-col md:flex-row gap-4 md:gap-8">
-              {/* Wishlist and Cart */}
+           
               <div className="flex items-center gap-4">
                 <li className="text-center relative">
                   <NavLink
@@ -74,10 +73,10 @@ export default function Navbar() {
                 </li>
               </div>
 
-              {/* Divider */}
+              
               <div className="border-l-2 border-gray-400 h-6"></div> 
 
-              {/* Categories, Products, Brands, Orders */}
+           
               <li className="text-center">
                 <NavLink
                   to="Catigories"
@@ -122,7 +121,7 @@ export default function Navbar() {
           ) : null}
         </div>
 
-        {/* Social Links & Login/Logout */}
+     
         <div
           className={`${visib ? "block" : "hidden"} md:flex items-center gap-4 w-full md:w-auto mt-4 md:mt-0`}
         >

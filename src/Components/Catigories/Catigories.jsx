@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { ColorRing } from "react-loader-spinner";  // Loader
+import { ColorRing } from "react-loader-spinner"; 
 import Catchield from "../Catchield/Catchield";
 
 export default function Categories() {
@@ -9,7 +9,7 @@ export default function Categories() {
   const [cat, setCat] = useState(null);
   const [subcat, setSubcat] = useState(null);
 
-  // Fetch categories data
+
   async function getCategory() {
     setLoad(true);
     try {
@@ -21,7 +21,7 @@ export default function Categories() {
     setLoad(false);
   }
 
-  // Fetch subcategories data
+
   async function getSubcat(id) {
     setLoader(true);
     try {
@@ -37,7 +37,7 @@ export default function Categories() {
     getCategory();
   }, []);
 
-  // Loader when fetching categories
+ 
   if (load) {
     return (
       <div className="h-screen bg-green-100 flex justify-center items-center">
@@ -54,7 +54,7 @@ export default function Categories() {
     );
   }
 
-  // Loader when fetching subcategories
+
   if (loader) {
     return (
       <div className="h-screen bg-gray-100 flex justify-center items-center">
@@ -74,7 +74,7 @@ export default function Categories() {
   return (
     <section className="md:p-10 p-6 bg-gray-50">
       <div className="w-full md:w-[80%] mx-auto">
-        {/* Categories Section */}
+        
         <div className="flex justify-center items-center flex-wrap gap-6">
           {cat?.map(function (ca, idx) {
             return (
@@ -97,7 +97,7 @@ export default function Categories() {
           })}
         </div>
 
-        {/* Subcategories Section */}
+        
         <div className="py-6 mt-10">
           <h2 className="text-green-600 text-center font-mono text-3xl mb-6">Subcategories</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">

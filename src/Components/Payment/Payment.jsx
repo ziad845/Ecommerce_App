@@ -11,7 +11,6 @@ export const Payment = () => {
   const [city, setcity] = useState('');
   const [errors, seterrors] = useState({ details: '', phone: '', city: '' });
 
-  // Function to validate form inputs
   function validatae() {
     let valid = true;
     let newErrors = { details: '', phone: '', city: '' };
@@ -36,7 +35,7 @@ export const Payment = () => {
     return valid;
   }
 
-  // Function for online payment
+
   async function onlinepayment() {
     if (!validatae()) return;
 
@@ -69,7 +68,7 @@ export const Payment = () => {
     }
   }
 
-  // Function for cash payment
+
   async function cashpayment() {
     if (!validatae()) return;
 
@@ -105,7 +104,7 @@ export const Payment = () => {
     <section className="py-12 bg-gray-50">
       <h2 className="text-center text-3xl text-green-600 font-semibold mb-6">Payment</h2>
       <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg">
-        {/* City Input */}
+    
         <div className="mb-5">
           <label htmlFor="city" className="block text-sm text-gray-600 font-medium mb-2">
             Your City
@@ -121,7 +120,7 @@ export const Payment = () => {
           {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
         </div>
 
-        {/* Phone Input */}
+        
         <div className="mb-5">
           <label htmlFor="phone" className="block text-sm text-gray-600 font-medium mb-2">
             Your Phone
@@ -137,7 +136,7 @@ export const Payment = () => {
           {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
         </div>
 
-        {/* Delivery Details Input */}
+      
         <div className="mb-5">
           <label htmlFor="details" className="block text-sm text-gray-600 font-medium mb-2">
             Delivery Details
@@ -153,7 +152,7 @@ export const Payment = () => {
           {errors.details && <p className="text-red-500 text-xs mt-1">{errors.details}</p>}
         </div>
 
-        {/* Payment Buttons */}
+       
         <div className="flex justify-between space-x-4">
           <button
             onClick={cashpayment}
